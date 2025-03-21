@@ -135,6 +135,23 @@ export function getFallback(): Fallback {
 
 function runScripts() {
 	let wait = Promise.resolve();
+	let needsWaitForInlineModuleScript = false;
+	// The original code made the assumption that all inline scripts are directly executed when inserted into the DOM.
+	// This is not true for inline module scripts, which are deferred but still executed in order.
+	// inline module scripts can not be awaited for with onload.
+	// Thus to be able to wait for the execution of all scripts, we make sure that the last inline module script
+	// is always followed by an external module script
+	for (const script of document.getElementsByTagName('script')) {
+		script.dataset.astroExec === undefined &&
+			script.getAttribute('type') === 'module' &&
+			(needsWaitForInlineModuleScript = script.getAttribute('src') === null);
+	}
+	needsWaitForInlineModuleScript &&
+		document.body.insertAdjacentHTML(
+			'beforeend',
+			`<script type="module" src="data:application/javascript,"/>`,
+		);
+
 	for (const script of document.getElementsByTagName('script')) {
 		if (script.dataset.astroExec === '') continue;
 		const type = script.getAttribute('type');
@@ -508,7 +525,6 @@ async function transition(
 		//
 		// "finished" resolves after all animations are done.
 
-		// @ts-expect-error the internal type `types` isn't provided and not even documented on MDN
 		currentTransition.viewTransition = {
 			updateCallbackDone: updateDone, // this is about correct
 			ready: updateDone, // good enough
@@ -520,6 +536,7 @@ async function transition(
 				// This cancels all animations of the simulation
 				document.documentElement.removeAttribute(OLD_NEW_ATTR);
 			},
+			types: new Set<string>(), // empty by default
 		};
 	}
 	// In earlier versions was then'ed on viewTransition.ready which would not execute
@@ -649,6 +666,7 @@ if (inBrowser) {
 	}
 	for (const script of document.getElementsByTagName('script')) {
 		detectScriptExecuted(script);
+		script.dataset.astroExec = '';
 	}
 }
 

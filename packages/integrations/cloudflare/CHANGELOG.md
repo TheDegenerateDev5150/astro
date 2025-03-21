@@ -1,5 +1,30 @@
 # @astrojs/cloudflare
 
+## 12.3.0
+
+### Minor Changes
+
+- [#13444](https://github.com/withastro/astro/pull/13444) [`9721f4a`](https://github.com/withastro/astro/commit/9721f4a69f0fca389f146a5b8051cc17a34cdb0f) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Adds global `astro:env` support
+
+  Cloudflare workers [now support importing `env` in the global scope](https://developers.cloudflare.com/changelog/2025-03-17-importable-env/). Until now, calling `astro:env` APIs had to be done within request scope or the values were `undefined`.
+
+  With this release, they can be called anywhere server-side, like any other official adapter.
+
+### Patch Changes
+
+- [#13463](https://github.com/withastro/astro/pull/13463) [`d5ad591`](https://github.com/withastro/astro/commit/d5ad591230918db302edc89c1a98436c16a4e0d2) Thanks [@ascorbic](https://github.com/ascorbic)! - Fixes a bug that caused builds to fail when a base directory is configured
+
+- Updated dependencies []:
+  - @astrojs/underscore-redirects@0.6.0
+
+## 12.2.4
+
+### Patch Changes
+
+- Updated dependencies [[`042d1de`](https://github.com/withastro/astro/commit/042d1de901fd9aa66157ce078b28bcd9786e1373)]:
+  - @astrojs/internal-helpers@0.6.1
+  - @astrojs/underscore-redirects@0.6.0
+
 ## 12.2.3
 
 ### Patch Changes
